@@ -1,29 +1,25 @@
 public with sharing class PaymentTypeWrapper {
+    @AuraEnabled
     public String type { get; set; }
+    @AuraEnabled
     public String label { get; set; }
+    @AuraEnabled
     public String location { get; set; }
+    @AuraEnabled
     public Boolean active { get; set; }
-    
-    public PaymentTypeWrapper() {
-        this.type = '';
-        this.label = '';
-        this.location = '';
-        this.active = false;
-    }
-    
+
     public PaymentTypeWrapper(Payment_Type__mdt paymentType) {
-        this.type = paymentType.Type__c;
-        this.label = paymentType.Label__c;
-        this.location = paymentType.Location__c;
         this.active = paymentType.Active__c;
+        this.label = paymentType.Label__c;
+        this.type = paymentType.Type__c;
+        this.location = paymentType.Location__c;
     }
-    
-    public Payment_Type__mdt toMetadata() {
-        Payment_Type__mdt paymentType = new Payment_Type__mdt();
-        paymentType.Type__c = this.type;
-        paymentType.Label__c = this.label;
-        paymentType.Location__c = this.location;
-        paymentType.Active__c = this.active;
-        return paymentType;
+
+    public static List<PaymentTypeWrapper> toLWC (List<Payment_Type__mdt> paymentTypes) {
+        List<PaymentTypeWrapper> wrapperList = new List<PaymentTypeWrapper>();
+        for (Payment_Type__mdt type : paymentTypes) {
+            wrapperList.add(new PaymentTypeWrapper(type));
+        }
+        return wrapperList;
     }
 }
