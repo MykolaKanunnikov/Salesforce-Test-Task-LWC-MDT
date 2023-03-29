@@ -1,6 +1,8 @@
 import { LightningElement, api } from 'lwc';
 import getRecords from '@salesforce/apex/LocationController.getRecords';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import PaymentTypesModal from 'c/paymentTypesModal';
+
 
 const columns = [
     { label: 'Active', fieldName: 'active', type: 'boolean' },
@@ -43,7 +45,15 @@ export default class PaymentTypes extends LightningElement {
     }
 
 
-    handleClick() {
-        this.rowOffset += 1;
+    /* handleClick() {
+         this.rowOffset += 1;
+     }*/
+
+    async handleClick() {
+        await PaymentTypesModal.open({
+            size: 'large',
+            content: this.recordId,
+        });
+
     }
 }
