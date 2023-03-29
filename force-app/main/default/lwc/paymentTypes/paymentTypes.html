@@ -1,3 +1,15 @@
 <template>
-    
+    <lightning-card  variant="Narrow"  title="Payment Types" icon-name="standard:payment_gateway">
+        <div style="height: 300px;">
+            <lightning-datatable
+                    key-field="id"
+                    data={data}
+                    show-row-number-column
+                    row-number-offset={rowOffset}
+                    hide-checkbox-column
+                    columns={columns}>
+            </lightning-datatable>
+        </div>
+        <lightning-button-icon  icon-name="utility:add" variant="border-filled" alternative-text="New Payment Type" slot="footer" onclick={handleClick}></lightning-button-icon>
+    </lightning-card>
 </template>
