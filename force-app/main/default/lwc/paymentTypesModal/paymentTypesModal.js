@@ -5,10 +5,16 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class PaymentTypesModal extends LightningModal {
 
+    //recieves recordId
     @api
     content;
 
+    //represents checkbox state
     isActive = false;
+
+    //toast
+    variant = 'error';
+    message = '';
 
     handleChange(event) {
         this.isActive = event.target.checked;
@@ -20,33 +26,30 @@ export default class PaymentTypesModal extends LightningModal {
         saveRecord({ recordId: this.content, label: label.value, type: type.value, active: this.isActive })
             .then(resp => {
                 if (resp.isSuccess) {
-                    const successEvent = new ShowToastEvent({
-                        title: 'To be saved if input is valid',
-                        variant: 'information',
-                        message: resp.responseObj
-                    });
-                    this.dispatchEvent(successEvent);
+                    this.message = 'To be saved if input is valid. ' + resp.responseObj;
+                    this.variant = 'info'
+                    this.showToast();
                     this.close(true);
                 } else {
-                    const errorEvent = new ShowToastEvent({
-                        title: 'Error',
-                        variant: 'error',
-                        message: resp.responseObj
-                    });
-                    this.dispatchEvent(errorEvent);
+                    this.message = resp.responseObj;
+                    this.showToast();
                     this.close();
                 }
             })
             .catch(error => {
-                const errorEvent = new ShowToastEvent({
-                    title: 'Error',
-                    variant: 'error',
-                    message: "Error: " + error.body.message
-                });
-                this.dispatchEvent(errorEvent);
+                this.message = error.body.message;
+                this.showToast();
                 this.close();
             })
 
     };
 
+    showToast() {
+        const event = new ShowToastEvent({
+            title: 'Status',
+            variant: this.variant,
+            message: this.message,
+        });
+        this.dispatchEvent(event);
+    }
 }

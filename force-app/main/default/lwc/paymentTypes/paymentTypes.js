@@ -15,11 +15,17 @@ export default class PaymentTypes extends LightningElement {
     @api
     recordId;
 
+    //datatable
     data = [];
-
     columns = columns;
     rowOffset = 0;
-    closedModal = false;
+
+    //modal
+    isModalJustClosed = false;
+
+    //toast
+    variant = 'error';
+    message = '';
 
     connectedCallback() {
         this.getRecordsToLWC();
@@ -31,44 +37,47 @@ export default class PaymentTypes extends LightningElement {
                 if (resp.isSuccess) {
                     if (this.data === [] || this.data.length != resp.responseObj.length) {
                         this.data = resp.responseObj;
-                        this.closedModal = false;
+                        this.isModalJustClosed = false;
                     }
                 } else {
-                    const errorEvent = new ShowToastEvent({
-                        title: 'Error',
-                        variant: 'error',
-                        message: resp.responseObj
-                    });
-                    this.dispatchEvent(errorEvent);
-                    this.closedModal = false;
+                    this.message = resp.responseObj;
+                    this.showToast();
+                    this.isModalJustClosed = false;
                 }
             })
             .catch(error => {
-                const errorEvent = new ShowToastEvent({
-                    title: 'Error',
-                    variant: 'error',
-                    message: "Error: " + error.body.message
-                });
-                this.dispatchEvent(errorEvent);
-                this.closedModal = false;
+                this.message = error.body.message;
+                this.showToast();
+                this.isModalJustClosed = false;
             })
 
     }
 
     async handleClick() {
-        this.closedModal = await PaymentTypesModal.open({
-            size: 'large',
+        this.isModalJustClosed = await PaymentTypesModal.open({
+            size: 'medium',
             content: this.recordId,
         });
-        if (this.closedModal) {
-            this.updateDatatable();
+        if (this.isModalJustClosed) {
+            this.refreshDatatable();
         }
     }
 
-    updateDatatable() {
-        setTimeout(()=> {
+    // let asycn jobs to complete (5 sec)
+    refreshDatatable() {
+        setTimeout(() => {
             this.getRecordsToLWC();
         }, 5000);
     }
+
+    showToast() {
+        const event = new ShowToastEvent({
+            title: 'Status',
+            variant: this.variant,
+            message: this.message,
+        });
+        this.dispatchEvent(event);
+    }
+
 
 }
