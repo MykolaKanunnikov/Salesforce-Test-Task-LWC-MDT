@@ -22,11 +22,12 @@ public with sharing class LocationController {
 
     /**
      * @description saveRecord description
-     * @param  recordId recordId description
-     * @param  label    label description
-     * @param  type     type description
-     * @param  active   active description
-     * @return          return description
+     * @param  recordId serves as a location value
+     * @param  label    
+     * @param  type     
+     * @param  active   
+     * @return       
+     * REQUIRED: add checks for params   
      */
     @AuraEnabled
     public static Response saveRecord(String recordId, String label, String type, Boolean active) {
