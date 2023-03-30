@@ -15,7 +15,7 @@ public with sharing class PaymentTypeWrapper {
         this.location = paymentType.Location__c;
     }
 
-    public static List<PaymentTypeWrapper> toLWC (List<Payment_Type__mdt> paymentTypes) {
+    public static List<PaymentTypeWrapper> toLWC(List<Payment_Type__mdt> paymentTypes) {
         List<PaymentTypeWrapper> wrapperList = new List<PaymentTypeWrapper>();
         for (Payment_Type__mdt type : paymentTypes) {
             wrapperList.add(new PaymentTypeWrapper(type));
