@@ -16,14 +16,23 @@ export default class PaymentTypes extends LightningElement {
     recordId;
 
     data = [];
+
     columns = columns;
     rowOffset = 0;
+    closedModal = false;
 
     connectedCallback() {
+        this.getRecordsToLWC();
+    }
+
+    getRecordsToLWC() {
         getRecords({ recordId: this.recordId })
             .then(resp => {
                 if (resp.isSuccess) {
-                    this.data = resp.responseObj;
+                    if (this.data === [] || this.data.length != resp.responseObj.length) {
+                        this.data = resp.responseObj;
+                        this.closedModal = false;
+                    }
                 } else {
                     const errorEvent = new ShowToastEvent({
                         title: 'Error',
@@ -31,6 +40,7 @@ export default class PaymentTypes extends LightningElement {
                         message: resp.responseObj
                     });
                     this.dispatchEvent(errorEvent);
+                    this.closedModal = false;
                 }
             })
             .catch(error => {
@@ -40,20 +50,25 @@ export default class PaymentTypes extends LightningElement {
                     message: "Error: " + error.body.message
                 });
                 this.dispatchEvent(errorEvent);
+                this.closedModal = false;
             })
 
     }
 
-
-    /* handleClick() {
-         this.rowOffset += 1;
-     }*/
-
     async handleClick() {
-        await PaymentTypesModal.open({
+        this.closedModal = await PaymentTypesModal.open({
             size: 'large',
             content: this.recordId,
         });
-
+        if (this.closedModal) {
+            this.updateDatatable();
+        }
     }
+
+    updateDatatable() {
+        setTimeout(()=> {
+            this.getRecordsToLWC();
+        }, 5000);
+    }
+
 }
