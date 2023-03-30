@@ -43,4 +43,10 @@ public with sharing class Response {
         this.isSuccess = false;
         this.responseObj = respMessage;
     }
+
+    public Response(CustomDeployException e) {
+        String respMessage = e.getMessage();
+        this.isSuccess = false;
+        this.responseObj = respMessage;
+    }
 }
