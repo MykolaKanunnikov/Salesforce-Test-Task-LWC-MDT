@@ -23,50 +23,56 @@ public with sharing class LocationController {
     /**
      * @description saveRecord description
      * @param  recordId serves as a location value
-     * @param  label    
-     * @param  type     
-     * @param  active   
-     * @return       
-     * REQUIRED: add checks for params   
+     * @param  label
+     * @param  type
+     * @param  active
+     * @return
+     * REQUIRED: add checks for params
      */
     @AuraEnabled
     public static Response saveRecord(String recordId, String label, String type, Boolean active) {
         Response resp;
         try {
-            Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
-            customMetadata.fullName = 'Payment_Type.' + label + '_' + recordId;
-            customMetadata.label = 'Standard' + label;
+            if (label == null || type == null || label == '' || type == '') {
+                resp = new Response(new CustomDeployException('No input recieved'));
+            } else {
+                Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
+                customMetadata.fullName = 'Payment_Type.' + label + '_' + recordId;
+                customMetadata.label = 'Standard ' + label;
 
-            Metadata.CustomMetadataValue typeValue = new Metadata.CustomMetadataValue();
-            typeValue.field = 'Type__c';
-            typeValue.value = type;
-            customMetadata.values.add(typeValue);
+                Metadata.CustomMetadataValue typeValue = new Metadata.CustomMetadataValue();
+                typeValue.field = 'Type__c';
+                typeValue.value = type;
+                customMetadata.values.add(typeValue);
 
-            Metadata.CustomMetadataValue labelValue = new Metadata.CustomMetadataValue();
-            labelValue.field = 'Label__c';
-            labelValue.value = label;
-            customMetadata.values.add(labelValue);
+                Metadata.CustomMetadataValue labelValue = new Metadata.CustomMetadataValue();
+                labelValue.field = 'Label__c';
+                labelValue.value = label;
+                customMetadata.values.add(labelValue);
 
-            Metadata.CustomMetadataValue locationValue = new Metadata.CustomMetadataValue();
-            locationValue.field = 'Location__c';
-            locationValue.value = recordId;
-            customMetadata.values.add(locationValue);   
+                Metadata.CustomMetadataValue locationValue = new Metadata.CustomMetadataValue();
+                locationValue.field = 'Location__c';
+                locationValue.value = recordId;
+                customMetadata.values.add(locationValue);
 
-            Metadata.CustomMetadataValue activeValue = new Metadata.CustomMetadataValue();
-            activeValue.field = 'Active__c';
-            activeValue.value = active;
-            customMetadata.values.add(activeValue);
+                Metadata.CustomMetadataValue activeValue = new Metadata.CustomMetadataValue();
+                activeValue.field = 'Active__c';
+                activeValue.value = active;
+                customMetadata.values.add(activeValue);
 
-            Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
-            mdContainer.addMetadata(customMetadata);
+                Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
+                mdContainer.addMetadata(customMetadata);
 
-            // Setup deploy callback
-            DeployCallback callback = new DeployCallback();
+                // Setup deploy callback
+                DeployCallback callback = new DeployCallback();
 
-            // Enqueue custom metadata deployment
-            Id deployRequestId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
+                // Enqueue custom metadata deployment
+                Id deployRequestId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
 
-            resp = new Response();
+                Object msg = 'deployRequestId: ' + deployRequestId;
+
+                resp = new Response(msg);
+            }
         } catch (Exception e) {
             resp = new Response(e);
         }
